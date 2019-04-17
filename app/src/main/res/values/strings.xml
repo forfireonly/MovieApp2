@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Popular Movies 2</string>
+
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="please_try_again_latter">Please, check your the format of your date and try again latter</string>
+    <string name="please_try">Please, Try</string>
+    <string name="turning_off_airplane_mode">Turning off airplane mode</string>
+    <string name="checking_signal_in_your_area">Checking signal in your area</string>
+    <string name="turning_on_mobile_data_or_wifi">Turning on mobile data or wifi</string>
+    <string name="and_restarting_the_app">And restarting the App</string>
+    <string name="original_title">Original Title</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="release_date">Release Date</string>
+    <string name="top_rated">Top rated</string>
+    <string name="most_popular">Most popular</string>
+</resources>
