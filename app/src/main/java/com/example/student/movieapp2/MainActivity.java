@@ -2,6 +2,7 @@ package com.example.student.movieapp2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     RelativeLayout noInternetConnection;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
+        int spanCount = getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_LANDSCAPE ? 4 : 2;
+
         // use a grid layout manager
-        layoutManager = new GridLayoutManager(this, 2);
+        layoutManager = new GridLayoutManager(this, spanCount);
         recyclerView.setLayoutManager(layoutManager);
 
 

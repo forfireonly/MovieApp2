@@ -14,15 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MovieDetail"
+        <activity
+            android:name=".MovieDetail"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop">
 
-            android:parentActivityName=".MainActivity" >
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +31,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".TrailersActivity"
+            android:parentActivityName=".MovieDetail" ></activity>
+
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MovieDetail" />
+        <activity android:name=".ReviewsActivity"
+            android:parentActivityName=".MovieDetail" ></activity>
+
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MovieDetail" />
+
     </application>
 
 </manifest>
-
