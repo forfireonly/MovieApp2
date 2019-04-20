@@ -38,6 +38,14 @@
                 android:layout_width="match_parent"
                 android:layout_marginBottom="12dp"/>
 
+            <ImageButton
+                android:id="@+id/favorites_button"
+                android:src="@drawable/button_favorites"
+                android:backgroundTint="#FFFFFF"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="12dp"/>
+
             <TextView
                 style="@style/Headers"
                 android:text="@string/original_title"

@@ -24,7 +24,7 @@ public class DBMovieTrailerQuery extends AsyncTask<String, Void, String> {
             String movieID = params[0];
             URL url = null;
 
-            url = new URL("https://api.themoviedb.org/3/movie/"+movieID+"/videos?api_key="+API_KEY);
+            url = new URL("https://api.themoviedb.org/3/movie/"+movieID+"?api_key="+API_KEY);
 
 
             urlConnection = (HttpURLConnection) url.openConnection();

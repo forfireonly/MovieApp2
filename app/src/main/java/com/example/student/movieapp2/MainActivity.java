@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public static String[] imgUrl = new String[20];
 
     public static ArrayList<String> trailers;
+    public static ArrayList <String> reviews;
 
     DisplayingMoviesAdapter.RecyclerViewClickListener listener;
     View spinner;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         noInternetConnection = (RelativeLayout) findViewById(R.id.no_internet);
 
         trailers = new ArrayList<>();
+        reviews = new ArrayList<>();
 
 
         // use this setting to improve performance if you know that changes
@@ -176,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 recyclerView.setAdapter(mAdapter);
                 return true;
+            case R.id.favorites:
         }
 
         return super.onOptionsItemSelected(item);

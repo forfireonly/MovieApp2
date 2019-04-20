@@ -22,11 +22,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import static com.example.student.movieapp2.MainActivity.reviews;
 import static com.example.student.movieapp2.MainActivity.trailers;
 
 public class MovieDetail extends AppCompatActivity {
     ImageButton playTrailerButton;
     ImageButton readReviewButton;
+    ImageButton addToFavorites;
 
     //this will store JSON response from API
     String resultString = null;
@@ -64,6 +66,13 @@ public class MovieDetail extends AppCompatActivity {
         final String idMovie = intent.getStringExtra("ID");
 
 
+        addToFavorites = (ImageButton)findViewById(R.id.favorites_button);
+        addToFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         playTrailerButton = (ImageButton) findViewById(R.id.play_trailer_button);
         playTrailerButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +97,7 @@ public class MovieDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    trailers = getMovieTrailer(idMovie);
+                    reviews = getMovieReviews(idMovie);
                     numberOfTrails = trailers.size();
                     Log.v("Number of trails", String.valueOf(numberOfTrails));
                 } catch (ExecutionException e) {
@@ -105,7 +114,7 @@ public class MovieDetail extends AppCompatActivity {
     }
     public ArrayList<String> getMovieTrailer(String idMovie) throws ExecutionException, InterruptedException, JSONException {
         DBMovieTrailerQuery downloadMovieTrailers = new DBMovieTrailerQuery();
-            resultString = downloadMovieTrailers.execute(idMovie).get();
+            resultString = downloadMovieTrailers.execute(idMovie+"/videos").get();
             Log.v("ResultString", resultString);
             Log.v("ID", idMovie);
             if (resultString != null) {
@@ -120,5 +129,26 @@ public class MovieDetail extends AppCompatActivity {
                     // i++;
                 }
             }return trailers;}
+
+    public ArrayList<String> getMovieReviews(String idMovie) throws ExecutionException, InterruptedException, JSONException {
+        DBMovieTrailerQuery downloadMovieTrailers = new DBMovieTrailerQuery();
+        resultString = downloadMovieTrailers.execute(idMovie+"/reviews").get();
+        Log.v("ResultString", resultString);
+        Log.v("ID", idMovie);
+        if (resultString != null) {
+            JSONObject movie = new JSONObject(resultString);
+            movieDetailsJSON = movie.getJSONArray("results");
+            for (int i = 0; i < movieDetailsJSON.length(); i++) {
+                JSONObject temp_mov = movieDetailsJSON.getJSONObject(i);
+                String review = temp_mov.getString("content");
+                Log.v("Review", review);
+                reviews.add(review);
+                //imgUrl[i+1] = "http://image.tmdb.org/t/p/w500/" + temp_mov.getString("poster_path");
+                // i++;
+            }
+        }return reviews;}
+
+
+
     }
 
