@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
+import java.util.concurrent.ExecutionException;
+
 import static com.example.student.movieapp2.MainActivity.imgUrl;
 
 
@@ -18,7 +20,7 @@ public class DisplayingMoviesAdapter extends RecyclerView.Adapter<DisplayingMovi
 
     public interface RecyclerViewClickListener {
 
-        void onClick(View view, int position) throws JSONException;
+        void onClick(View view, int position) throws JSONException, ExecutionException, InterruptedException;
     }
 
 
@@ -69,6 +71,10 @@ public class DisplayingMoviesAdapter extends RecyclerView.Adapter<DisplayingMovi
             try {
                 mListener.onClick(view, getAdapterPosition());
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
                 e.printStackTrace();
             }
 

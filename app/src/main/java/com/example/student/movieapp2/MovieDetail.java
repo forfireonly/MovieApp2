@@ -1,8 +1,12 @@
 package com.example.student.movieapp2;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -11,9 +15,24 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
+import static com.example.student.movieapp2.MainActivity.trailers;
+
 public class MovieDetail extends AppCompatActivity {
     ImageButton playTrailerButton;
     ImageButton readReviewButton;
+
+    //this will store JSON response from API
+    String resultString = null;
+    JSONArray movieDetailsJSON;
+
+    public static int numberOfTrails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +61,23 @@ public class MovieDetail extends AppCompatActivity {
         TextView rating = (TextView) findViewById(R.id.user_rating);
         rating.setText(ratingString + "/10");
 
+        final String idMovie = intent.getStringExtra("ID");
+
+
+
         playTrailerButton = (ImageButton) findViewById(R.id.play_trailer_button);
         playTrailerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    trailers = getMovieTrailer(idMovie);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Intent startTrailersActivity = new Intent(getBaseContext(), TrailersActivity.class);
                 startActivity(startTrailersActivity);
             }
@@ -55,10 +87,38 @@ public class MovieDetail extends AppCompatActivity {
         readReviewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    trailers = getMovieTrailer(idMovie);
+                    numberOfTrails = trailers.size();
+                    Log.v("Number of trails", String.valueOf(numberOfTrails));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Intent startReviewsActivity = new Intent(getBaseContext(), ReviewsActivity.class);
                 startActivity(startReviewsActivity);
             }
         });
-
     }
-}
+    public ArrayList<String> getMovieTrailer(String idMovie) throws ExecutionException, InterruptedException, JSONException {
+        DBMovieTrailerQuery downloadMovieTrailers = new DBMovieTrailerQuery();
+            resultString = downloadMovieTrailers.execute(idMovie).get();
+            Log.v("ResultString", resultString);
+            Log.v("ID", idMovie);
+            if (resultString != null) {
+                JSONObject movie = new JSONObject(resultString);
+                movieDetailsJSON = movie.getJSONArray("results");
+                for (int i = 0; i < movieDetailsJSON.length(); i++) {
+                    JSONObject temp_mov = movieDetailsJSON.getJSONObject(i);
+                    String videoKey = temp_mov.getString("key");
+                    Log.v("VIDEO Key", videoKey);
+                    trailers.add("http://www.youtube.com/watch?v=" + videoKey);
+                    //imgUrl[i+1] = "http://image.tmdb.org/t/p/w500/" + temp_mov.getString("poster_path");
+                    // i++;
+                }
+            }return trailers;}
+    }
+

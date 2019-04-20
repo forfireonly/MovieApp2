@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final  String RELEASE_DATE = "release_date";
     private final  String VOTE_AVERAGE = "vote_average";
+    private final  String MOVIE_ID = "id";
 
     //this will store JSON response from API
     String resultString = null;
@@ -46,10 +48,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static String[] imgUrl = new String[20];
 
+    public static ArrayList<String> trailers;
+
     DisplayingMoviesAdapter.RecyclerViewClickListener listener;
     View spinner;
 
     RelativeLayout noInternetConnection;
+
+    public static String movieID;
 
 
     @Override
@@ -63,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         spinner =(View) findViewById(R.id.loading_spinner);
 
         noInternetConnection = (RelativeLayout) findViewById(R.id.no_internet);
+
+        trailers = new ArrayList<>();
 
 
         // use this setting to improve performance if you know that changes
@@ -79,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         listener = new DisplayingMoviesAdapter.RecyclerViewClickListener() {
             @Override
-            public void onClick(View view, int position) throws JSONException {
+            public void onClick(View view, int position) throws JSONException, ExecutionException, InterruptedException {
                 //Toast.makeText(MainActivity.this, "Position " + position, Toast.LENGTH_SHORT).show();
                 if (!isOnline()){
                     noInternetConnection.setVisibility(View.VISIBLE);
@@ -93,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
                     String vote = object.getString(VOTE_AVERAGE);
                     String plot = object.getString(PLOT_SYNOPSIS);
 
+                    movieID =object.getString(MOVIE_ID);
+                    Log.v(MOVIE_ID, movieID);
+
+                   // trailers = getTrailers(movieID);
+                    //Log.v("Trailers", list.toString());
+
                     //invoke new activity with Intent
                     Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
                     intent.putExtra("TITLE",title);
@@ -100,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("RELEASE_DATE",release_date);
                     intent.putExtra("VOTE_AVERAGE",vote);
                     intent.putExtra("PLOT_SYNOPSIS",plot);
+
+                    intent.putExtra("ID",movieID);
 
                     startActivity(intent);}
 
@@ -189,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             }}
 
         return imgUrl;}
-
 
 
     // check if we are connected to a network
