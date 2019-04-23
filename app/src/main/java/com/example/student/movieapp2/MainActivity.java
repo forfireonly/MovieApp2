@@ -1,10 +1,13 @@
 package com.example.student.movieapp2;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,18 +18,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     public static String API_KEY = "YOUR-API-KEY";
 
@@ -54,9 +61,16 @@ public class MainActivity extends AppCompatActivity {
     DisplayingMoviesAdapter.RecyclerViewClickListener listener;
     View spinner;
 
+    FavoritesAdapter.RecyclerViewClickListener listener_2;
+
     RelativeLayout noInternetConnection;
 
     public static String movieID;
+
+    private List<FavoriteMovie> favMovs;
+    private ArrayList<MovieClass> movieList;
+
+    public static ArrayList<String> favoriteMoviePosters;
 
 
     @Override
@@ -73,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
         trailers = new ArrayList<>();
         reviews = new ArrayList<>();
+        favoriteMoviePosters = new ArrayList<>();
+        movieList = new ArrayList<>();
 
 
         // use this setting to improve performance if you know that changes
@@ -123,6 +139,30 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+        listener_2 = new FavoritesAdapter.RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int i) throws JSONException, ExecutionException, InterruptedException {
+                Toast.makeText(MainActivity.this, "Position " + i, Toast.LENGTH_SHORT).show();
+                    Log.v("favorites position", String.valueOf(i) );
+                    String title = favMovs.get(i).getTitle();
+                    String release_date = favMovs.get(i).getReleaseDate();
+                    String vote = favMovs.get(i).getVote();
+                    String synopsis = favMovs.get(i).getSynopsis();
+                    String image = favMovs.get(i).getImage();
+
+                    //invoke new activity with Intent
+                    Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
+                    intent.putExtra("TITLE",title);
+                    intent.putExtra("MOVIE_POSTER", image);
+                    intent.putExtra("RELEASE_DATE",release_date);
+                    intent.putExtra("VOTE_AVERAGE",vote);
+                    intent.putExtra("PLOT_SYNOPSIS", synopsis);
+
+                    startActivity(intent);
+                }
+
+            };
+
 
         // specify an adapter (see also next example)
         try {
@@ -138,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
         // Log.v("choice", choice);
         spinner.setVisibility(View.GONE);
+
+        setupViewModel();
     }
 
 
@@ -181,12 +223,33 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setAdapter(mAdapter);
                 return true;
             case R.id.favorites:
+                //Log.v("Favorite movies number", String.valueOf(favMovs.size()));
+                for (int i = 0; i< favMovs.size(); i++) {
+
+                   /* MovieClass mov = new MovieClass(
+                            String.valueOf(favMovs.get(i).getId()),
+                            favMovs.get(i).getTitle(),
+                            favMovs.get(i).getReleaseDate(),
+                            favMovs.get(i).getVote(),
+                            favMovs.get(i).getSynopsis(),
+                            favMovs.get(i).getImage()
+                    );
+                    movieList.add( mov );*/
+                    favoriteMoviePosters.add(favMovs.get(i).getImage());
+                }
+
+                mAdapter = new FavoritesAdapter(this, favoriteMoviePosters, listener);
+                Log.v("Size of Favorite movies", String.valueOf(favoriteMoviePosters.size()) );
+                Log.v("Movie link", favoriteMoviePosters.get(0));
+                recyclerView.setAdapter(mAdapter);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     public String[] getMoviePoster(String selection) throws ExecutionException, InterruptedException, JSONException {
+
         if (!isOnline()){
             noInternetConnection.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -207,6 +270,23 @@ public class MainActivity extends AppCompatActivity {
             }}
 
         return imgUrl;}
+
+    private void setupViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<FavoriteMovie>>() {
+            @Override
+            public void onChanged(@Nullable List<FavoriteMovie> favs) {
+                if(favs.size()>0) {
+                    //favMovs.clear();
+                    favMovs = favs;
+                }
+               // for (int i=0; i<favMovs.size(); i++) {
+                 //   Log.d(TAG,favMovs.get(i).getTitle());
+               // }
+             //   loadMovies();
+            }
+        });
+    }
 
 
     // check if we are connected to a network

@@ -2,16 +2,21 @@ package com.example.student.movieapp2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +33,11 @@ import static com.example.student.movieapp2.MainActivity.trailers;
 public class MovieDetail extends AppCompatActivity {
     ImageButton playTrailerButton;
     ImageButton readReviewButton;
-    ImageButton addToFavorites;
+    ImageButton mFavButton;
+
+    Boolean isFav;
+
+    MovieDatabase mDb;
 
     //this will store JSON response from API
     String resultString = null;
@@ -42,37 +51,83 @@ public class MovieDetail extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
 
         Intent intent = getIntent();
-        String poster =  "http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
+        final String poster =  "http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
 
         ImageView moviePoster = findViewById(R.id.movie_poster);
         Picasso.get().load(poster).into(moviePoster);
 
-        String originalTitleString = intent.getStringExtra("TITLE");
+        final String originalTitleString = intent.getStringExtra("TITLE");
         TextView originalTitle = (TextView) findViewById(R.id.original_title);
         originalTitle.setText(originalTitleString);
 
-        String releaseDateString = intent.getStringExtra("RELEASE_DATE");
+        final String releaseDateString = intent.getStringExtra("RELEASE_DATE");
         TextView releaseDate = (TextView) findViewById(R.id.release_date);
         releaseDate.setText(releaseDateString);
 
-        String synopsisString = intent.getStringExtra("PLOT_SYNOPSIS");
+        final String synopsisString = intent.getStringExtra("PLOT_SYNOPSIS");
         TextView synopsis = (TextView) findViewById(R.id.synopsis);
         synopsis.setText(synopsisString);
 
-        String ratingString = intent.getStringExtra("VOTE_AVERAGE");
-        TextView rating = (TextView) findViewById(R.id.user_rating);
+        final String ratingString = intent.getStringExtra("VOTE_AVERAGE");
+        final TextView rating = (TextView) findViewById(R.id.user_rating);
         rating.setText(ratingString + "/10");
 
         final String idMovie = intent.getStringExtra("ID");
 
 
-        addToFavorites = (ImageButton)findViewById(R.id.favorites_button);
-        addToFavorites.setOnClickListener(new View.OnClickListener() {
+        mFavButton = (ImageButton) findViewById(R.id.favorite_button);
+
+        mDb = MovieDatabase.getInstance(getApplicationContext());
+
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final FavoriteMovie fmov = mDb.movieDao().loadMovieById(Integer.parseInt(idMovie));
+                setFavorite((fmov != null)? true : false);
+            }
+        });
+
+        mFavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final FavoriteMovie mov = new FavoriteMovie(
+                        Integer.parseInt(idMovie),
+                        originalTitleString,
+                        releaseDateString,
+                        ratingString,
+                        synopsisString,
+                        poster
+
+                );
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFav) {
+                            // delete item
+                            mDb.movieDao().deleteMovie(mov);
+                        } else {
+                            // insert item
+                            mDb.movieDao().insertMovie(mov);
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setFavorite(!isFav);
+                            }
+                        });
+                    }
+
+                });
 
             }
         });
+
+
+
+
+
+
 
         playTrailerButton = (ImageButton) findViewById(R.id.play_trailer_button);
         playTrailerButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +203,14 @@ public class MovieDetail extends AppCompatActivity {
             }
         }return reviews;}
 
-
-
+    private void setFavorite(Boolean fav){
+        if (fav) {
+            isFav = true;
+            mFavButton.setImageResource(R.drawable.button_remove_from_favorites);
+        } else {
+            isFav = false;
+            mFavButton.setImageResource(R.drawable.button_favorites);
+        }
+    }
     }
 
