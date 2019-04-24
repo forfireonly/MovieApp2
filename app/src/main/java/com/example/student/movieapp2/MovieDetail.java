@@ -51,7 +51,7 @@ public class MovieDetail extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
 
         Intent intent = getIntent();
-        final String poster =  "http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
+        final String poster = intent.getStringExtra("MOVIE_POSTER"); //"http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
 
         ImageView moviePoster = findViewById(R.id.movie_poster);
         Picasso.get().load(poster).into(moviePoster);
@@ -122,10 +122,6 @@ public class MovieDetail extends AppCompatActivity {
 
             }
         });
-
-
-
-
 
 
 
