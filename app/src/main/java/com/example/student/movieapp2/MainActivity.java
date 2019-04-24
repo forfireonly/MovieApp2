@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    public static String API_KEY = "YOUR-API-KEY";
+    public static String API_KEY = "3d51412658ec7072e6c6d9603afe81d0";//"YOUR-API-KEY";
 
     public  String choice = "popular";
 
