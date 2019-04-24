@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         emptyList = (TextView) findViewById(R.id.empty_list);
-        
+
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         spinner =(View) findViewById(R.id.loading_spinner);
