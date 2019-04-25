@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -85,7 +86,10 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-        spinner =(View) findViewById(R.id.loading_spinner);
+        spinner =(RelativeLayout) findViewById(R.id.loading_spinner);
+
+
+        spinner.setVisibility(View.VISIBLE);
 
         noInternetConnection = (RelativeLayout) findViewById(R.id.no_internet);
 
@@ -93,9 +97,12 @@ public class MainActivity extends AppCompatActivity {
         reviews = new ArrayList<>();
         favoriteMoviePosters = new ArrayList<>();
 
+
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
+
+
 
         int spanCount = getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_LANDSCAPE ? 4 : 2;
@@ -129,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     //invoke new activity with Intent
                     Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
                     intent.putExtra("TITLE",title);
-                    intent.putExtra("MOVIE_POSTER", poster);
+                    intent.putExtra("MOVIE_POSTER", "http://image.tmdb.org/t/p/w780/"+poster);
                     intent.putExtra("RELEASE_DATE",release_date);
                     intent.putExtra("VOTE_AVERAGE",vote);
                     intent.putExtra("PLOT_SYNOPSIS",plot);
@@ -144,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int i) throws JSONException, ExecutionException, InterruptedException {
 
-                Toast.makeText(MainActivity.this, "Position " + i, Toast.LENGTH_LONG).show();
+               // Toast.makeText(MainActivity.this, "Position " + i, Toast.LENGTH_LONG).show();
                     Log.v("favorites position", String.valueOf(i) );
                     String id = String.valueOf(favMovs.get(i).getId());
                     String title = favMovs.get(i).getTitle();
@@ -183,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
         spinner.setVisibility(View.GONE);
 
         setupViewModel();
-    }
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -327,5 +334,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+
 
 }

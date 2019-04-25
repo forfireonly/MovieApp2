@@ -52,9 +52,11 @@ public class MovieDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         final String poster = intent.getStringExtra("MOVIE_POSTER"); //"http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
-
+        //final String poster_internet = "http://image.tmdb.org/t/p/w780/" + intent.getStringExtra("MOVIE_POSTER");
         ImageView moviePoster = findViewById(R.id.movie_poster);
+        //Picasso.get().load(poster_internet).into(moviePoster);
         Picasso.get().load(poster).into(moviePoster);
+
 
         final String originalTitleString = intent.getStringExtra("TITLE");
         TextView originalTitle = (TextView) findViewById(R.id.original_title);
