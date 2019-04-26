@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private final  String VOTE_AVERAGE = "vote_average";
     private final  String MOVIE_ID = "id";
 
+    public static Integer position;
+
     //this will store JSON response from API
     String resultString = null;
     JSONArray movieDetailsJSON;
@@ -151,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int i) throws JSONException, ExecutionException, InterruptedException {
 
+                position = i;
+
                // Toast.makeText(MainActivity.this, "Position " + i, Toast.LENGTH_LONG).show();
                     Log.v("favorites position", String.valueOf(i) );
                     String id = String.valueOf(favMovs.get(i).getId());
@@ -241,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.favorites:
               //  Log.v("Favorite movies number", String.valueOf(favMovs.size()));
                 setTitle(getString(R.string.app_name) + " - Favorites");
-                if(favMovs != null && !favMovs.isEmpty()) {
+                if(favMovs != null ) {
                     favoriteMoviePosters.clear();
                     for (int i = 0; i< favMovs.size(); i++) {
 
@@ -289,17 +293,28 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getMovies().observe(this, new Observer<List<FavoriteMovie>>() {
             @Override
             public void onChanged(@Nullable List<FavoriteMovie> favs) {
-                if(favs.size()>0) {
-                //    favMovs.clear();
-                    favMovs = favs;
+                if(favs.size()==0) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyList.setVisibility(View.VISIBLE);
+                  //  favMovs.clear();
+                  //  favMovs = favs;
                 }
-               // for (int i=0; i<favMovs.size(); i++) {
-                 //   Log.d(TAG,favMovs.get(i).getTitle());
-               // }
-             //   loadMovies();
-            }
-        });
-    }
+                else {
+                 //   favMovs.clear();
+                    favMovs = favs;
+                    favoriteMoviePosters.clear();
+                    for (int i = 0; i< favMovs.size(); i++) {
+                        favoriteMoviePosters.add(favMovs.get(i).getImage());}
+                    //mAdapter = new FavoritesAdapter(this, favoriteMoviePosters, listener_2);
+                    }
+                recyclerView.setAdapter(mAdapter);
+                    //favoriteMoviePosters.remove(favMovs.get(position).getImage());
+
+                }
+
+            });
+        };
+
 
 
     // check if we are connected to a network

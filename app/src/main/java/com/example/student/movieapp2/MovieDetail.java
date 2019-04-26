@@ -210,5 +210,10 @@ public class MovieDetail extends AppCompatActivity {
             mFavButton.setImageResource(R.drawable.button_favorites);
         }
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
     }
 
